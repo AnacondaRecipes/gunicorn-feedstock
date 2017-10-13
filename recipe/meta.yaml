@@ -21,7 +21,7 @@ build:
     - gunicorn_paster=gunicorn.app.pasterapp:run
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
 
