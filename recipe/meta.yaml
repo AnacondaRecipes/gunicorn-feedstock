@@ -1,4 +1,4 @@
-{% set version = "20.1.0" %}
+{% set version = "22.0.0" %}
 
 package:
   name: gunicorn
@@ -6,13 +6,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/g/gunicorn/gunicorn-{{ version }}.tar.gz
-  sha256: e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8
+  sha256: 4a0b436239ff76fb33f11c07a16482c521a7e09c1ce3cc293c2330afe01bec63
 
 build:
   skip: True  # [win]
-  skip: True  # [py<30]
+  skip: True  # [py<37]
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
   preserve_egg_dir: True
   entry_points:
     - gunicorn=gunicorn.app.wsgiapp:run
@@ -21,9 +21,11 @@ requirements:
   host:
     - python
     - pip
+    - setuptools
+    - wheel
   run:
     - python
-    - setuptools
+    - packaging
 
 test:
   imports:
@@ -34,9 +36,11 @@ test:
     - gunicorn.workers
   commands:
     - gunicorn --help
+    - pip check
   requires:
-    - paste
-    - pastedeploy
+    - pip
+    # - paste
+    # - pastedeploy
 
 about:
   home: http://gunicorn.org
