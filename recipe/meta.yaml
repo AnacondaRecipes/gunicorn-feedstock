@@ -10,7 +10,7 @@ source:
 
 build:
   skip: True  # [win]
-  skip: True  # [py<37]
+  skip: True  # [py<38]
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
   preserve_egg_dir: True
@@ -39,8 +39,8 @@ test:
     - pip check
   requires:
     - pip
-    # - paste
-    # - pastedeploy
+    - paste # [py<312]
+    - pastedeploy # [py<312]
 
 about:
   home: https://gunicorn.org
