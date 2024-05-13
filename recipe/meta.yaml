@@ -39,8 +39,7 @@ test:
     - pip check
   requires:
     - pip
-    - paste # [py<312]
-    - pastedeploy # [py<312]
+    - paste # [py<312 or s390x]
 
 about:
   home: https://gunicorn.org
