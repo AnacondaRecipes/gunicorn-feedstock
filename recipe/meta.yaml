@@ -9,7 +9,8 @@ source:
   sha256: 88ec8bff1d634f98e61b9f65bc4bf3cd918a90806c6f5c48bc5603849ec81033
 
 build:
-  skip: True  # [win]
+  # Failing on s390x and also not needed on s390x for mlflow
+  skip: True  # [win or s390x]
   skip: True  # [py<35]
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
@@ -39,7 +40,7 @@ test:
     - pip check
   requires:
     - pip
-    - paste # [py<312 or s390x]
+    - paste # [py<312]
 
 about:
   home: https://gunicorn.org
