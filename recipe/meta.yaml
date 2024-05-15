@@ -27,6 +27,11 @@ requirements:
   run:
     - python
     - packaging
+    - importlib-metadata. # [py<38]
+  run_constrained:
+    - gevent >=1.4.0
+    - eventlet >=0.24.1
+    - tornado >=0.2
 
 test:
   imports:
@@ -40,7 +45,6 @@ test:
     - pip check
   requires:
     - pip
-    - paste # [py<312]
 
 about:
   home: https://gunicorn.org
