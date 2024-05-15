@@ -27,7 +27,7 @@ requirements:
   run:
     - python
     - packaging
-    - importlib-metadata. # [py<38]
+    - importlib-metadata # [py<38]
   run_constrained:
     - gevent >=1.4.0
     - eventlet >=0.24.1
