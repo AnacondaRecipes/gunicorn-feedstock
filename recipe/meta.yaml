@@ -1,4 +1,4 @@
-{% set version = "20.1.0" %}
+{% set version = "21.2.0" %}
 
 package:
   name: gunicorn
@@ -6,13 +6,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/g/gunicorn/gunicorn-{{ version }}.tar.gz
-  sha256: e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8
+  sha256: 88ec8bff1d634f98e61b9f65bc4bf3cd918a90806c6f5c48bc5603849ec81033
 
 build:
-  skip: True  # [win]
-  skip: True  # [py<30]
+  # Failing on s390x and also not needed on s390x for mlflow
+  skip: True  # [win or s390x]
+  skip: True  # [py<35]
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
   preserve_egg_dir: True
   entry_points:
     - gunicorn=gunicorn.app.wsgiapp:run
@@ -21,9 +22,16 @@ requirements:
   host:
     - python
     - pip
+    - setuptools
+    - wheel
   run:
     - python
-    - setuptools
+    - packaging
+    - importlib-metadata # [py<38]
+  run_constrained:
+    - gevent >=1.4.0
+    - eventlet >=0.24.1
+    - tornado >=0.2
 
 test:
   imports:
@@ -34,21 +42,19 @@ test:
     - gunicorn.workers
   commands:
     - gunicorn --help
+    - pip check
   requires:
-    - paste
-    - pastedeploy
+    - pip
 
 about:
-  home: http://gunicorn.org
+  home: https://gunicorn.org
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: 'WSGI HTTP Server for UNIX'
+  summary: WSGI HTTP Server for UNIX
   description: |
-    Gunicorn pre-fork worker model ported from Ruby's Unicorn project.Gunicorn
-    server is broadly compatible with various web frameworks,simply
-    implemented,light on server resources and fairly speedy.
-  doc_url: http://docs.gunicorn.org/en/stable/
-  doc_source_url: https://github.com/benoitc/gunicorn/blob/master/docs/source/index.rst
+    Gunicorn pre-fork worker model ported from Ruby's Unicorn project. Gunicorn server is broadly compatible with various web frameworks,simply implemented,light on server resources and fairly speedy.
+  doc_url: https://docs.gunicorn.org
   dev_url: https://github.com/benoitc/gunicorn
 
 extra:
