@@ -1,16 +1,17 @@
-{% set version = "22.0.0" %}
+{% set name = "gunicorn" %}
+{% set version = "23.0.0" %}
 
 package:
-  name: gunicorn
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/g/gunicorn/gunicorn-{{ version }}.tar.gz
-  sha256: 4a0b436239ff76fb33f11c07a16482c521a7e09c1ce3cc293c2330afe01bec63
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec
 
 build:
-  # Failing on s390x and also not needed on s390x for mlflow
-  skip: True  # [win or s390x]
+  # Windows is not supported by upstream by design
+  skip: True  # [win]
   skip: True  # [py<37]
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
@@ -22,7 +23,7 @@ requirements:
   host:
     - python
     - pip
-    - setuptools
+    - setuptools >=61.2
     - wheel
   run:
     - python
@@ -34,6 +35,8 @@ requirements:
     - tornado >=0.2
 
 test:
+  source_files:
+    - tests
   imports:
     - gunicorn
     - gunicorn.app
@@ -42,9 +45,13 @@ test:
     - gunicorn.workers
   requires:
     - pip
+    - eventlet
+    - pytest >=7.2.0
   commands:
     - gunicorn --help
     - pip check
+    # tests/workers/test_ggevent.py: missing gevent >=1.4.0
+    - pytest -vv tests --ignore="tests/workers/test_ggevent.py"
 
 about:
   home: https://gunicorn.org
