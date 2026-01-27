@@ -1,21 +1,21 @@
 {% set name = "gunicorn" %}
-{% set version = "23.0.0" %}
+{% set version = "24.1.1" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f006d110e5cb3102859b4f5cd48335dbd9cc28d0d27cd24ddbdafa6c60929408
 
 build:
   # Windows is not supported by upstream by design
-  skip: True  # [win]
-  skip: True  # [py<37]
-  number: 1
+  skip: true  # [win]
+  skip: true  # [py<37]
+  number: 0
   script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
-  preserve_egg_dir: True
+  preserve_egg_dir: true
   entry_points:
     - gunicorn=gunicorn.app.wsgiapp:run
 
@@ -24,15 +24,14 @@ requirements:
     - python
     - pip
     - setuptools >=61.2
-    - wheel
   run:
     - python
     - packaging
-    - importlib-metadata # [py<38]
+    - importlib-metadata  # [py<38]
   run_constrained:
-    - gevent >=1.4.0
-    - eventlet >=0.24.1,!=0.36.0
-    - tornado >=0.2
+    - gevent >=24.10.1
+    - eventlet >=0.40.3
+    - tornado >=6.5.0
 
 test:
   source_files:
