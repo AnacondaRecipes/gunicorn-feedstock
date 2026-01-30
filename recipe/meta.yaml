@@ -12,7 +12,7 @@ source:
 build:
   # Windows is not supported by upstream by design
   skip: true  # [win]
-  skip: true  # [py<37]
+  skip: true  # [py<310]
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
   preserve_egg_dir: true
@@ -27,7 +27,6 @@ requirements:
   run:
     - python
     - packaging
-    - importlib-metadata  # [py<38]
   run_constrained:
     - gevent >=24.10.1
     - eventlet >=0.40.3
@@ -49,8 +48,7 @@ test:
   commands:
     - gunicorn --help
     - pip check
-    # tests/workers/test_ggevent.py: missing gevent >=1.4.0
-    - pytest -vv tests --ignore="tests/workers/test_ggevent.py"
+    - pytest -vv tests
 
 about:
   home: https://gunicorn.org
