@@ -15,9 +15,8 @@ build:
   skip: true  # [py<310]
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
-  preserve_egg_dir: true
   entry_points:
-    - gunicorn=gunicorn.app.wsgiapp:run
+    - gunicorn = gunicorn.app.wsgiapp:run
 
 requirements:
   host:
@@ -32,6 +31,9 @@ requirements:
     - eventlet >=0.40.3
     - tornado >=6.5.0
 
+# Docker tests
+{% set ignore_tests = "--ignore=tests/docker/uwsgi/test_uwsgi_integration.py" %}
+
 test:
   source_files:
     - tests
@@ -43,12 +45,13 @@ test:
     - gunicorn.workers
   requires:
     - pip
-    - eventlet
+    - eventlet >=0.40.3
     - pytest >=7.2.0
+    - pytest-asyncio
   commands:
     - gunicorn --help
     - pip check
-    - pytest -vv tests
+    - pytest -v tests {{ ignore_tests }}
 
 about:
   home: https://gunicorn.org
