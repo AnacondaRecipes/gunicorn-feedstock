@@ -1,13 +1,20 @@
 {% set name = "gunicorn" %}
-{% set version = "25.0.1" %}
+{% set version = "26.2.0" %}
+{% set ignore_tests = "--ignore=tests/docker" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_http2_async_connection.py" %}
+{% set deselect_tests = " --deselect=tests/test_asgi_worker.py::TestASGIIntegration::test_http_request_response" %}
 
+# Docker tests
+# >  assert "Hello, World!" in response_text
+# E  AssertionError: assert 'Hello, World!' in 'HTTP/1.1 200 OK\r\ncontent-type: text/plain\r\n\r\n'
+# Randomly failing on CI
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 573e053aa950246e307ea908bd7ddce1870d41a40aec0c935938c586f0b9b946
+  sha256: 62b864895d9ebff0b2f9867ba04fe811c93121596540830c9c916d0769668447
 
 build:
   # Windows is not supported by upstream by design
@@ -29,16 +36,9 @@ requirements:
   run_constrained:
     - gevent >=24.10.1
     - eventlet >=0.40.3
-    - tornado >=6.5.0
-    - h2 >=4.1.0
-
-# Docker tests
-{% set ignore_tests = "--ignore=tests/docker" %}
-# >  assert "Hello, World!" in response_text
-# E  AssertionError: assert 'Hello, World!' in 'HTTP/1.1 200 OK\r\ncontent-type: text/plain\r\n\r\n'
-{% set deselect_tests = " --deselect=tests/test_asgi_worker.py::TestASGIIntegration::test_http_request_response" %}
-# Randomly failing on CI
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_http2_async_connection.py" %}
+    - tornado >=6.5.7
+    - h2 >=4.4.1
+    - gunicorn_h1c >=0.6.9
 
 test:
   source_files:
