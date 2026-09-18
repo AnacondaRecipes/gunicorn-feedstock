@@ -1,13 +1,6 @@
 {% set name = "gunicorn" %}
 {% set version = "26.2.0" %}
-{% set ignore_tests = "--ignore=tests/docker" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_http2_async_connection.py" %}
-{% set deselect_tests = " --deselect=tests/test_asgi_worker.py::TestASGIIntegration::test_http_request_response" %}
 
-# Docker tests
-# >  assert "Hello, World!" in response_text
-# E  AssertionError: assert 'Hello, World!' in 'HTTP/1.1 200 OK\r\ncontent-type: text/plain\r\n\r\n'
-# Randomly failing on CI
 package:
   name: {{ name }}
   version: {{ version }}
@@ -24,6 +17,7 @@ build:
   script: {{ PYTHON }} -m pip install . --no-deps -vv --no-build-isolation
   entry_points:
     - gunicorn = gunicorn.app.wsgiapp:run
+    - gunicornc = gunicorn.ctl.cli:main
 
 requirements:
   host:
@@ -35,10 +29,17 @@ requirements:
     - packaging
   run_constrained:
     - gevent >=24.10.1
-    - eventlet >=0.40.3
     - tornado >=6.5.7
     - h2 >=4.4.1
     - gunicorn_h1c >=0.6.9
+
+# Docker tests
+{% set ignore_tests = "--ignore=tests/docker" %}
+# >  assert "Hello, World!" in response_text
+# E  AssertionError: assert 'Hello, World!' in 'HTTP/1.1 200 OK\r\ncontent-type: text/plain\r\n\r\n'
+{% set deselect_tests = " --deselect=tests/test_asgi_worker.py::TestASGIIntegration::test_http_request_response" %}
+# Randomly failing on CI
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_http2_async_connection.py" %}
 
 test:
   source_files:
@@ -51,14 +52,14 @@ test:
     - gunicorn.workers
   requires:
     - pip
-    - eventlet
     - h2
-    - pytest >=7.2.0
+    - pytest >=9.0.3
     - pytest-asyncio
   commands:
     - gunicorn --help
+    - gunicornc --help
     - pip check
-    - pytest -v tests {{ ignore_tests }} {{ deselect_tests }}
+    - pytest -vv tests {{ ignore_tests }} {{ deselect_tests }}
 
 about:
   home: https://gunicorn.org
